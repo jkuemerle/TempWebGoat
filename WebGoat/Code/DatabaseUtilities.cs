@@ -7,23 +7,23 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Configuration;
-using Mono.Data.Sqlite;
+using System.Data.SQLite;
 
 namespace OWASP.WebGoat.NET
 {
 	public class DatabaseUtilities
 	{
-		private SqliteConnection conn = null;
+		private SQLiteConnection conn = null;
 		private string GoatDBFile = HttpContext.Current.Server.MapPath ("~/App_Data/") + "goatdb.sqlite";
 			
-		private SqliteConnection GetGoatDBConnection ()
+		private SQLiteConnection GetGoatDBConnection ()
 		{
 			if (conn == null) {
 				//set the physical path to the SQLite database
 				string connectionstring = "Data Source=" + GoatDBFile;
 				
 				//create the connection
-				conn = new SqliteConnection (connectionstring);
+                conn = new SQLiteConnection(connectionstring);
 				conn.Open ();
 			}
 			return conn;
@@ -33,17 +33,17 @@ namespace OWASP.WebGoat.NET
 		{
 			if (File.Exists (GoatDBFile)) 
 				File.Delete (GoatDBFile);
-			
-			SqliteConnection.CreateFile (GoatDBFile);
-			SqliteConnection cn = GetGoatDBConnection ();
+
+            SQLiteConnection.CreateFile(GoatDBFile);
+            SQLiteConnection cn = GetGoatDBConnection();
 			CreateTables (cn);
 			AddDataToTables (cn);
 			//create the tables
 			cn.Close ();
 			return true;			
 		}
-		
-		public void RunSQLFromFile (SqliteConnection cn, String filename)
+
+        public void RunSQLFromFile(SQLiteConnection cn, String filename)
 		{
 			using (FileStream fs = new FileStream(filename, FileMode.Open)) {
 				using (StreamReader sr = new StreamReader(fs, Encoding.UTF8)) {
@@ -57,28 +57,30 @@ namespace OWASP.WebGoat.NET
 				}
 			}	
 		}
-		
-		public void CreateTables (SqliteConnection cn)
+
+        public void CreateTables(SQLiteConnection cn)
 		{
 			String filename = HttpContext.Current.Server.MapPath ("~/App_Data/") + "tables.sql";
 			RunSQLFromFile (cn, filename);
 		}
-		
-		public void AddDataToTables (SqliteConnection cn)
+
+        public void AddDataToTables(SQLiteConnection cn)
 		{
 			String filename = HttpContext.Current.Server.MapPath ("~/App_Data/") + "tabledata.sql";
 			RunSQLFromFile (cn, filename);
 		}
 		
-		private string DoNonQuery (String SQL, SqliteConnection conn)
+		private string DoNonQuery (String SQL, SQLiteConnection conn)
 		{
-			var cmd = new SqliteCommand (SQL, conn);
+            var cmd = new SQLiteCommand(SQL);
 			var output = string.Empty;
 			
 			try {
 				cmd.ExecuteNonQuery ();
 				output += "<br/>SQL Executed: " + SQL;
-			} catch (SqliteException ex) {
+            }
+            catch (SQLiteException ex)
+            {
 				output += "<br/>SQL Exception: " + ex.Message;
 				output += SQL;
 			} catch (Exception ex) {
@@ -88,14 +90,14 @@ namespace OWASP.WebGoat.NET
 			return output;
 		}
 		
-		private string DoScalar (String SQL, SqliteConnection conn)
+		private string DoScalar (String SQL, SQLiteConnection conn)
 		{
-			var cmd = new SqliteCommand (SQL, conn);
+			var cmd = new SQLiteCommand (SQL, conn);
 			var output = string.Empty;
 			
 			try {
 				output = (string)cmd.ExecuteScalar ();
-			} catch (SqliteException ex) {
+			} catch (SQLiteException ex) {
 				output += "<br/>SQL Exception: " + ex.Message + " - ";
 				output += SQL;
 			} catch (Exception ex) {
@@ -125,10 +127,10 @@ namespace OWASP.WebGoat.NET
 		//TODO send back as an array or a dictionary or something
 		//TODO Do formatting in the page itself
 		/*
-		private string DoQuery (string SQL, SqliteConnection conn)
+		private string DoQuery (string SQL, SQLiteConnection conn)
 		{
 			string result = string.Empty;
-			var cmd = new SqliteCommand (SQL, conn);
+			var cmd = new SQLiteCommand (SQL, conn);
 			using (var reader = cmd.ExecuteReader ()) {
 				while (reader.Read ()) {
 					for (int i = 0; i < reader.FieldCount; ++i) {
@@ -141,9 +143,9 @@ namespace OWASP.WebGoat.NET
 			return result;
 		}
 		*/
-		private DataTable DoQuery (string SQL, SqliteConnection conn)
+		private DataTable DoQuery (string SQL, SQLiteConnection conn)
 		{
-			var cmd = new SqliteCommand (SQL, conn);
+			var cmd = new SQLiteCommand (SQL, conn);
 			DataTable dt = new DataTable ();
 			using (var reader = cmd.ExecuteReader ()) {
 				

@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Configuration.Provider;
 using System.Data;
-using Mono.Data.Sqlite;
+using System.Data.SQLite;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -248,7 +248,7 @@ namespace TechInfoSystems.Data.SQLite
 				throw new ProviderException ("SQLiteMembershipProvider configuration error: enablePasswordRetrieval can not be set to true when passwordFormat is set to \"Hashed\". Check the web configuration file (web.config).");
 			}
 
-			// Initialize SqliteConnection.
+			// Initialize SQLiteConnection.
 			ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings [config ["connectionStringName"]];
 
 			if (ConnectionStringSettings == null || ConnectionStringSettings.ConnectionString == null || ConnectionStringSettings.ConnectionString.Trim ().Length == 0) {
@@ -344,9 +344,9 @@ namespace TechInfoSystems.Data.SQLite
 					throw new MembershipPasswordException ("Change password canceled due to new password validation failure.");
 			}
 
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "UPDATE " + USER_TB_NAME +
 														" SET Password = $Password, LastPasswordChangedDate = $LastPasswordChangedDate " +
 														" WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
@@ -401,9 +401,9 @@ namespace TechInfoSystems.Data.SQLite
 			SecUtility.CheckParameter (ref encodedPasswordAnswer, this.RequiresQuestionAndAnswer, this.RequiresQuestionAndAnswer, false, MAX_PASSWORD_ANSWER_LENGTH, "newPasswordAnswer");
 
 
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "UPDATE " + USER_TB_NAME +
 														" SET PasswordQuestion = $Question, PasswordAnswer = $Answer" +
 														" WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
@@ -545,9 +545,9 @@ namespace TechInfoSystems.Data.SQLite
 					}
 				}
 
-				SqliteConnection cn = GetDBConnectionForMembership ();
+				SQLiteConnection cn = GetDBConnectionForMembership ();
 				try {
-					using (SqliteCommand cmd = cn.CreateCommand()) {
+					using (SQLiteCommand cmd = cn.CreateCommand()) {
 						cmd.CommandText = "INSERT INTO " + USER_TB_NAME +
 									" (UserId, Username, LoweredUsername, ApplicationId, Email, LoweredEmail, Comment, Password, " +
 									" PasswordFormat, PasswordSalt, PasswordQuestion, PasswordAnswer, IsApproved, IsAnonymous, " +
@@ -623,9 +623,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override bool DeleteUser (string username, bool deleteAllRelatedData)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
@@ -680,9 +680,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override MembershipUserCollection GetAllUsers (int pageIndex, int pageSize, out int totalRecords)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Count(*) FROM " + USER_TB_NAME + " WHERE ApplicationId = $ApplicationId AND IsAnonymous='0'";
 					cmd.Parameters.AddWithValue ("$ApplicationId", _applicationId);
 
@@ -704,7 +704,7 @@ namespace TechInfoSystems.Data.SQLite
 									 " WHERE ApplicationId = $ApplicationId AND IsAnonymous='0' " +
 									 " ORDER BY Username Asc";
 
-					using (SqliteDataReader reader = cmd.ExecuteReader()) {
+					using (SQLiteDataReader reader = cmd.ExecuteReader()) {
 						int counter = 0;
 						int startIndex = pageSize * pageIndex;
 						int endIndex = startIndex + pageSize - 1;
@@ -739,9 +739,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override int GetNumberOfUsersOnline ()
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Count(*) FROM " + USER_TB_NAME +
 												" WHERE LastActivityDate > $LastActivityDate AND ApplicationId = $ApplicationId";
 
@@ -780,9 +780,9 @@ namespace TechInfoSystems.Data.SQLite
 				throw new ProviderException ("Cannot retrieve hashed passwords.");
 			}
 
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Password, PasswordFormat, PasswordSalt, PasswordAnswer, IsLockedOut FROM "
 						+ USER_TB_NAME + " WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
 
@@ -792,7 +792,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader((CommandBehavior.SingleRow))) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader((CommandBehavior.SingleRow))) {
 						string password, passwordAnswer, passwordSalt;
 						MembershipPasswordFormat passwordFormat;
 
@@ -839,9 +839,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override MembershipUser GetUser (string username, bool userIsOnline)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT UserId, Username, Email, PasswordQuestion,"
 						+ " Comment, IsApproved, IsLockedOut, CreateDate, LastLoginDate,"
 						+ " LastActivityDate, LastPasswordChangedDate, LastLockoutDate"
@@ -855,7 +855,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						if (dr.HasRows) {
 							dr.Read ();
 							user = GetUserFromReader (dr);
@@ -890,9 +890,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override MembershipUser GetUser (object providerUserKey, bool userIsOnline)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT UserId, Username, Email, PasswordQuestion,"
 						+ " Comment, IsApproved, IsLockedOut, CreateDate, LastLoginDate,"
 						+ " LastActivityDate, LastPasswordChangedDate, LastLockoutDate"
@@ -905,7 +905,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						if (dr.HasRows) {
 							dr.Read ();
 							user = GetUserFromReader (dr);
@@ -936,9 +936,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// <returns>Returns true if user was unlocked; otherwise returns false.</returns>
 		public override bool UnlockUser (string username)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "UPDATE " + USER_TB_NAME
 						+ " SET IsLockedOut = '0', FailedPasswordAttemptCount = 0,"
 						+ " FailedPasswordAttemptWindowStart = $MinDate, FailedPasswordAnswerAttemptCount = 0,"
@@ -972,9 +972,9 @@ namespace TechInfoSystems.Data.SQLite
 			if (email == null)
 				return null;
 
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Username" +
 						" FROM " + USER_TB_NAME + " WHERE LoweredEmail = $Email AND ApplicationId = $ApplicationId";
 
@@ -1059,9 +1059,9 @@ namespace TechInfoSystems.Data.SQLite
 			}
 
 			// From this point on the only logic I need to implement is that contained in aspnet_Membership_ResetPassword.
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT PasswordAnswer, IsLockedOut FROM " + USER_TB_NAME
 						+ " WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
 
@@ -1071,7 +1071,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
 						string passwordAnswerFromDb;
 						if (dr.HasRows) {
 							dr.Read ();
@@ -1122,9 +1122,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// <param name="user">A <see cref="T:System.Web.Security.MembershipUser"/> object that represents the user to update and the updated information for the user.</param>
 		public override void UpdateUser (MembershipUser user)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "UPDATE " + USER_TB_NAME +
 							" SET Email = $Email, LoweredEmail = $LoweredEmail, Comment = $Comment," +
 							" IsApproved = $IsApproved" +
@@ -1168,9 +1168,9 @@ namespace TechInfoSystems.Data.SQLite
 
 			if (isAuthenticated) {
 				// User is authenticated. Update last activity and last login dates.
-				SqliteConnection cn = GetDBConnectionForMembership ();
+				SQLiteConnection cn = GetDBConnectionForMembership ();
 				try {
-					using (SqliteCommand cmd = cn.CreateCommand()) {
+					using (SQLiteCommand cmd = cn.CreateCommand()) {
 						cmd.CommandText = "UPDATE " + USER_TB_NAME
 						+ " SET LastActivityDate = $UtcNow, LastLoginDate = $UtcNow"
 						+ " WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
@@ -1205,9 +1205,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override MembershipUserCollection FindUsersByName (string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Count(*) FROM " + USER_TB_NAME +
 								"WHERE LoweredUsername LIKE $UsernameSearch AND ApplicationId = $ApplicationId";
 
@@ -1232,7 +1232,7 @@ namespace TechInfoSystems.Data.SQLite
 						+ " WHERE LoweredUsername LIKE $UsernameSearch AND ApplicationId = $ApplicationId "
 						+ " ORDER BY Username Asc";
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						int counter = 0;
 						int startIndex = pageSize * pageIndex;
 						int endIndex = startIndex + pageSize - 1;
@@ -1271,9 +1271,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override MembershipUserCollection FindUsersByEmail (string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Count(*) FROM " + USER_TB_NAME
 						+ " WHERE LoweredEmail LIKE $EmailSearch AND ApplicationId = $ApplicationId";
 
@@ -1298,7 +1298,7 @@ namespace TechInfoSystems.Data.SQLite
 						+ " WHERE LoweredEmail LIKE $EmailSearch AND ApplicationId = $ApplicationId"
 						+ " ORDER BY Username Asc";
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						int counter = 0;
 						int startIndex = pageSize * pageIndex;
 						int endIndex = startIndex + pageSize - 1;
@@ -1352,9 +1352,9 @@ namespace TechInfoSystems.Data.SQLite
 				return;
 
 			// No record exists in the application table. Create one now.
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "INSERT INTO " + APP_TB_NAME + " (ApplicationId, ApplicationName, Description) VALUES ($ApplicationId, $ApplicationName, $Description)";
 
 					_applicationId = Guid.NewGuid ().ToString ();
@@ -1375,9 +1375,9 @@ namespace TechInfoSystems.Data.SQLite
 
 		private static string GetApplicationId (string appName)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT ApplicationId FROM aspnet_Applications WHERE ApplicationName = $AppName";
 					cmd.Parameters.AddWithValue ("$AppName", appName);
 
@@ -1403,7 +1403,7 @@ namespace TechInfoSystems.Data.SQLite
 
 		private MembershipUser GetUserFromReader (IDataRecord reader)
 		{
-			// A helper function that takes the current row from the SqliteDataReader
+			// A helper function that takes the current row from the SQLiteDataReader
 			// and hydrates a MembershipUser from the values. Called by the MembershipUser.GetUser implementation.
 			// Datareader is filled with SQL specifying these fields:
 			// SELECT UserId, Username, Email, PasswordQuestion,"
@@ -1466,9 +1466,9 @@ namespace TechInfoSystems.Data.SQLite
 				throw new ArgumentException ("Invalid value for failureType parameter. Must be 'password' or 'passwordAnswer'.", "failureType");
 			}
 
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT FailedPasswordAttemptCount, FailedPasswordAttemptWindowStart, "
 						+ "  FailedPasswordAnswerAttemptCount, FailedPasswordAnswerAttemptWindowStart, IsLockedOut "
 						+ "  FROM " + USER_TB_NAME
@@ -1486,7 +1486,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
 						if (dr.HasRows) {
 							dr.Read ();
 
@@ -1672,9 +1672,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// <param name="lastActivityDate">The last activity date.</param>
 		private static void GetPasswordWithFormat (string username, out int status, out string password, out MembershipPasswordFormat passwordFormat, out string passwordSalt, out int failedPasswordAttemptCount, out int failedPasswordAnswerAttemptCount, out bool isApproved, out DateTime lastLoginDate, out DateTime lastActivityDate)
 		{
-			SqliteConnection cn = GetDBConnectionForMembership ();
+			SQLiteConnection cn = GetDBConnectionForMembership ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT Password, PasswordFormat, PasswordSalt, FailedPasswordAttemptCount,"
 						+ " FailedPasswordAnswerAttemptCount, IsApproved, IsLockedOut, LastLoginDate, LastActivityDate"
 						+ " FROM " + USER_TB_NAME + " WHERE LoweredUsername = $Username AND ApplicationId = $ApplicationId";
@@ -1685,7 +1685,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader(CommandBehavior.SingleRow)) {
 						if (dr.HasRows) {
 							dr.Read ();
 
@@ -1849,24 +1849,24 @@ namespace TechInfoSystems.Data.SQLite
 		/// Get a reference to the database connection used for membership. If a transaction is currently in progress, and the
 		/// connection string of the transaction connection is the same as the connection string for the membership provider,
 		/// then the connection associated with the transaction is returned, and it will already be open. If no transaction is in progress,
-		/// a new <see cref="SqliteConnection"/> is created and returned. It will be closed and must be opened by the caller
+		/// a new <see cref="SQLiteConnection"/> is created and returned. It will be closed and must be opened by the caller
 		/// before using.
 		/// </summary>
-		/// <returns>A <see cref="SqliteConnection"/> object.</returns>
+		/// <returns>A <see cref="SQLiteConnection"/> object.</returns>
 		/// <remarks>The transaction is stored in <see cref="System.Web.HttpContext.Current"/>. That means transaction support is limited
 		/// to web applications. For other types of applications, there is no transaction support unless this code is modified.</remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		private static SqliteConnection GetDBConnectionForMembership ()
+		private static SQLiteConnection GetDBConnectionForMembership ()
 		{
 			// Look in the HTTP context bag for a previously created connection and transaction. Return if found and its connection
 			// string matches that of the Membership connection string; otherwise return a fresh connection.
 			if (System.Web.HttpContext.Current != null) {
-				SqliteTransaction tran = (SqliteTransaction)System.Web.HttpContext.Current.Items [_httpTransactionId];
+				SQLiteTransaction tran = (SQLiteTransaction)System.Web.HttpContext.Current.Items [_httpTransactionId];
 				if ((tran != null) && (String.Equals (tran.Connection.ConnectionString, _connectionString)))
 					return tran.Connection;
 			}
 
-			return new SqliteConnection (_connectionString);
+			return new SQLiteConnection (_connectionString);
 		}
 
 		/// <summary>
@@ -1875,10 +1875,10 @@ namespace TechInfoSystems.Data.SQLite
 		/// <returns>
 		/// 	<c>true</c> if a database transaction is in progress; otherwise, <c>false</c>.
 		/// </returns>
-		/// <remarks>A transaction is considered in progress if an instance of <see cref="SqliteTransaction"/> is found in the
+		/// <remarks>A transaction is considered in progress if an instance of <see cref="SQLiteTransaction"/> is found in the
 		/// <see cref="System.Web.HttpContext.Current"/> Items property and its connection string is equal to the Membership 
 		/// provider's connection string. Note that this implementation of <see cref="SQLiteMembershipProvider"/> never adds a 
-		/// <see cref="SqliteTransaction"/> to <see cref="System.Web.HttpContext.Current"/>, but it is possible that 
+		/// <see cref="SQLiteTransaction"/> to <see cref="System.Web.HttpContext.Current"/>, but it is possible that 
 		/// another data provider in this application does. This may be because other data is also stored in this SQLite database,
 		/// and the application author wants to provide transaction support across the individual providers. If an instance of
 		/// <see cref="System.Web.HttpContext.Current"/> does not exist (for example, if the calling application is not a web application),
@@ -1888,7 +1888,7 @@ namespace TechInfoSystems.Data.SQLite
 			if (System.Web.HttpContext.Current == null)
 				return false;
 
-			SqliteTransaction tran = (SqliteTransaction)System.Web.HttpContext.Current.Items [_httpTransactionId];
+			SQLiteTransaction tran = (SQLiteTransaction)System.Web.HttpContext.Current.Items [_httpTransactionId];
 
 			if ((tran != null) && (String.Equals (tran.Connection.ConnectionString, _connectionString)))
 				return true;

@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Configuration.Provider;
 using System.Data;
-using Mono.Data.Sqlite;
+using System.Data.SQLite;
 using System.Web.Security;
 
 namespace TechInfoSystems.Data.SQLite
@@ -104,7 +104,7 @@ namespace TechInfoSystems.Data.SQLite
 			// Initialize the abstract base class.
 			base.Initialize (name, config);
 
-			// Initialize SqliteConnection.
+			// Initialize SQLiteConnection.
 			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings [config ["connectionStringName"]];
 
 			if (connectionStringSettings == null || connectionStringSettings.ConnectionString.Trim () == "") {
@@ -169,8 +169,8 @@ namespace TechInfoSystems.Data.SQLite
 				}
 			}
 
-			SqliteTransaction tran = null;
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteTransaction tran = null;
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
 				if (cn.State == ConnectionState.Closed)
 					cn.Open ();
@@ -178,7 +178,7 @@ namespace TechInfoSystems.Data.SQLite
 				if (!IsTransactionInProgress ())
 					tran = cn.BeginTransaction ();
 
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "INSERT INTO " + USERS_IN_ROLES_TB_NAME
 						+ " (UserId, RoleId)"
 						+ " SELECT u.UserId, r.RoleId"
@@ -186,8 +186,8 @@ namespace TechInfoSystems.Data.SQLite
 						+ " WHERE (u.LoweredUsername = $Username) AND (u.ApplicationId = $MembershipApplicationId)"
 						+ " AND (r.LoweredRoleName = $RoleName) AND (r.ApplicationId = $ApplicationId)";
 
-					SqliteParameter userParm = cmd.Parameters.Add ("$Username", DbType.String, MAX_USERNAME_LENGTH);
-					SqliteParameter roleParm = cmd.Parameters.Add ("$RoleName", DbType.String, MAX_ROLENAME_LENGTH);
+					SQLiteParameter userParm = cmd.Parameters.Add ("$Username", DbType.String, MAX_USERNAME_LENGTH);
+					SQLiteParameter roleParm = cmd.Parameters.Add ("$RoleName", DbType.String, MAX_ROLENAME_LENGTH);
 					cmd.Parameters.AddWithValue ("$MembershipApplicationId", _membershipApplicationId);
 					cmd.Parameters.AddWithValue ("$ApplicationId", _applicationId);
 
@@ -207,7 +207,7 @@ namespace TechInfoSystems.Data.SQLite
 				if (tran != null) {
 					try {
 						tran.Rollback ();
-					} catch (SqliteException) {
+					} catch (SQLiteException) {
 					}
 				}
 				throw;
@@ -238,9 +238,9 @@ namespace TechInfoSystems.Data.SQLite
 				throw new ProviderException (String.Format ("The role name is too long: it must not exceed {0} chars in length.", MAX_ROLENAME_LENGTH));
 			}
 
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "INSERT INTO " + ROLE_TB_NAME
 						+ " (RoleId, RoleName, LoweredRoleName, ApplicationId) "
 						+ " Values ($RoleId, $RoleName, $LoweredRoleName, $ApplicationId)";
@@ -279,8 +279,8 @@ namespace TechInfoSystems.Data.SQLite
 				throw new ProviderException ("Cannot delete a populated role.");
 			}
 
-			SqliteTransaction tran = null;
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteTransaction tran = null;
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
 				if (cn.State == ConnectionState.Closed)
 					cn.Open ();
@@ -288,7 +288,7 @@ namespace TechInfoSystems.Data.SQLite
 				if (!IsTransactionInProgress ())
 					tran = cn.BeginTransaction ();
 
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "DELETE FROM " + USERS_IN_ROLES_TB_NAME + " WHERE (RoleId IN"
 														 + " (SELECT RoleId FROM " + ROLE_TB_NAME + " WHERE LoweredRoleName = $RoleName))";
 
@@ -297,7 +297,7 @@ namespace TechInfoSystems.Data.SQLite
 					cmd.ExecuteNonQuery ();
 				}
 
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "DELETE FROM " + ROLE_TB_NAME + " WHERE LoweredRoleName = $RoleName AND ApplicationId = $ApplicationId";
 
 					cmd.Parameters.AddWithValue ("$RoleName", roleName.ToLowerInvariant ());
@@ -313,7 +313,7 @@ namespace TechInfoSystems.Data.SQLite
 				if (tran != null) {
 					try {
 						tran.Rollback ();
-					} catch (SqliteException) {
+					} catch (SQLiteException) {
 					}
 				}
 
@@ -339,16 +339,16 @@ namespace TechInfoSystems.Data.SQLite
 		{
 			string tmpRoleNames = String.Empty;
 
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT RoleName FROM " + ROLE_TB_NAME + " WHERE ApplicationId = $ApplicationId";
 					cmd.Parameters.AddWithValue ("$ApplicationId", _applicationId);
 
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						while (dr.Read()) {
 							tmpRoleNames += dr.GetString (0) + ",";
 						}
@@ -379,9 +379,9 @@ namespace TechInfoSystems.Data.SQLite
 		{
 			string tmpRoleNames = String.Empty;
 
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT r.RoleName FROM " + ROLE_TB_NAME + " r INNER JOIN " + USERS_IN_ROLES_TB_NAME
 						+ " uir ON r.RoleId = uir.RoleId INNER JOIN " + USER_TB_NAME + " u ON uir.UserId = u.UserId"
 						+ " WHERE (u.LoweredUsername = $Username) AND (u.ApplicationId = $MembershipApplicationId)";
@@ -392,7 +392,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						while (dr.Read()) {
 							tmpRoleNames += dr.GetString (0) + ",";
 						}
@@ -421,9 +421,9 @@ namespace TechInfoSystems.Data.SQLite
 		{
 			string tmpUserNames = String.Empty;
 
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT u.Username FROM " + USER_TB_NAME + " u INNER JOIN " + USERS_IN_ROLES_TB_NAME
 						+ " uir ON u.UserId = uir.UserId INNER JOIN " + ROLE_TB_NAME + " r ON uir.RoleId = r.RoleId"
 						+ " WHERE (r.LoweredRoleName = $RoleName) AND (r.ApplicationId = $ApplicationId)";
@@ -434,7 +434,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						while (dr.Read()) {
 							tmpUserNames += dr.GetString (0) + ",";
 						}
@@ -464,9 +464,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override bool IsUserInRole (string username, string roleName)
 		{
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT COUNT(*) FROM " + USERS_IN_ROLES_TB_NAME + " uir INNER JOIN "
 						+ USER_TB_NAME + " u ON uir.UserId = u.UserId INNER JOIN " + ROLE_TB_NAME + " r ON uir.RoleId = r.RoleId "
 						+ " WHERE u.LoweredUsername = $Username AND u.ApplicationId = $MembershipApplicationId"
@@ -509,8 +509,8 @@ namespace TechInfoSystems.Data.SQLite
 				}
 			}
 
-			SqliteTransaction tran = null;
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteTransaction tran = null;
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
 				if (cn.State == ConnectionState.Closed)
 					cn.Open ();
@@ -518,13 +518,13 @@ namespace TechInfoSystems.Data.SQLite
 				if (!IsTransactionInProgress ())
 					tran = cn.BeginTransaction ();
 
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "DELETE FROM " + USERS_IN_ROLES_TB_NAME
 						+ " WHERE UserId = (SELECT UserId FROM " + USER_TB_NAME + " WHERE LoweredUsername = $Username AND ApplicationId = $MembershipApplicationId)"
 						+ " AND RoleId = (SELECT RoleId FROM " + ROLE_TB_NAME + " WHERE LoweredRoleName = $RoleName AND ApplicationId = $ApplicationId)";
 
-					SqliteParameter userParm = cmd.Parameters.Add ("$Username", DbType.String, MAX_USERNAME_LENGTH);
-					SqliteParameter roleParm = cmd.Parameters.Add ("$RoleName", DbType.String, MAX_ROLENAME_LENGTH);
+					SQLiteParameter userParm = cmd.Parameters.Add ("$Username", DbType.String, MAX_USERNAME_LENGTH);
+					SQLiteParameter roleParm = cmd.Parameters.Add ("$RoleName", DbType.String, MAX_ROLENAME_LENGTH);
 					cmd.Parameters.AddWithValue ("$MembershipApplicationId", _membershipApplicationId);
 					cmd.Parameters.AddWithValue ("$ApplicationId", _applicationId);
 
@@ -544,7 +544,7 @@ namespace TechInfoSystems.Data.SQLite
 				if (tran != null) {
 					try {
 						tran.Rollback ();
-					} catch (SqliteException) {
+					} catch (SQLiteException) {
 					}
 				}
 
@@ -567,9 +567,9 @@ namespace TechInfoSystems.Data.SQLite
 		/// </returns>
 		public override bool RoleExists (string roleName)
 		{
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT COUNT(*) FROM " + ROLE_TB_NAME +
 								" WHERE LoweredRoleName = $RoleName AND ApplicationId = $ApplicationId";
 
@@ -599,9 +599,9 @@ namespace TechInfoSystems.Data.SQLite
 		{
 			string tmpUserNames = String.Empty;
 
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT u.Username FROM " + USERS_IN_ROLES_TB_NAME + " uir INNER JOIN " + USER_TB_NAME
 						+ " u ON uir.UserId = u.UserId INNER JOIN " + ROLE_TB_NAME + " r ON r.RoleId = uir.RoleId"
 						+ " WHERE u.LoweredUsername LIKE $UsernameSearch AND r.LoweredRoleName = $RoleName AND u.ApplicationId = $MembershipApplicationId"
@@ -615,7 +615,7 @@ namespace TechInfoSystems.Data.SQLite
 					if (cn.State == ConnectionState.Closed)
 						cn.Open ();
 
-					using (SqliteDataReader dr = cmd.ExecuteReader()) {
+					using (SQLiteDataReader dr = cmd.ExecuteReader()) {
 						while (dr.Read()) {
 							tmpUserNames += dr.GetString (0) + ",";
 						}
@@ -641,9 +641,9 @@ namespace TechInfoSystems.Data.SQLite
 
 		private static string GetApplicationId (string appName)
 		{
-			SqliteConnection cn = GetDbConnectionForRole ();
+			SQLiteConnection cn = GetDbConnectionForRole ();
 			try {
-				using (SqliteCommand cmd = cn.CreateCommand()) {
+				using (SQLiteCommand cmd = cn.CreateCommand()) {
 					cmd.CommandText = "SELECT ApplicationId FROM aspnet_Applications WHERE ApplicationName = $AppName";
 					cmd.Parameters.AddWithValue ("$AppName", appName);
 
@@ -663,9 +663,9 @@ namespace TechInfoSystems.Data.SQLite
 			// Verify a record exists in the application table.
 			if (String.IsNullOrEmpty (_applicationId) || String.IsNullOrEmpty (_membershipApplicationName)) {
 				// No record exists in the application table for either the role application and/or the membership application. Create it.
-				SqliteConnection cn = GetDbConnectionForRole ();
+				SQLiteConnection cn = GetDbConnectionForRole ();
 				try {
-					using (SqliteCommand cmd = cn.CreateCommand()) {
+					using (SQLiteCommand cmd = cn.CreateCommand()) {
 						cmd.CommandText = "INSERT INTO " + APP_TB_NAME + " (ApplicationId, ApplicationName, Description) VALUES ($ApplicationId, $ApplicationName, $Description)";
 
 						string roleApplicationId = Guid.NewGuid ().ToString ();
@@ -710,25 +710,25 @@ namespace TechInfoSystems.Data.SQLite
 		/// Get a reference to the database connection used for Role. If a transaction is currently in progress, and the
 		/// connection string of the transaction connection is the same as the connection string for the Role provider,
 		/// then the connection associated with the transaction is returned, and it will already be open. If no transaction is in progress,
-		/// a new <see cref="SqliteConnection"/> is created and returned. It will be closed and must be opened by the caller
+		/// a new <see cref="SQLiteConnection"/> is created and returned. It will be closed and must be opened by the caller
 		/// before using.
 		/// </summary>
-		/// <returns>A <see cref="SqliteConnection"/> object.</returns>
+		/// <returns>A <see cref="SQLiteConnection"/> object.</returns>
 		/// <remarks>The transaction is stored in <see cref="System.Web.HttpContext.Current"/>. That means transaction support is limited
 		/// to web applications. For other types of applications, there is no transaction support unless this code is modified.</remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-		private static SqliteConnection GetDbConnectionForRole ()
+		private static SQLiteConnection GetDbConnectionForRole ()
 		{
 			// Look in the HTTP context bag for a previously created connection and transaction. Return if found and its connection
 			// string matches that of the Role connection string; otherwise return a fresh connection.
 			if (System.Web.HttpContext.Current != null) {
 				const string HTTP_TRANSACTION_ID = "SQLiteTran";
-				SqliteTransaction tran = (SqliteTransaction)System.Web.HttpContext.Current.Items [HTTP_TRANSACTION_ID];
+				SQLiteTransaction tran = (SQLiteTransaction)System.Web.HttpContext.Current.Items [HTTP_TRANSACTION_ID];
 				if ((tran != null) && (String.Equals (tran.Connection.ConnectionString, _connectionString)))
 					return tran.Connection;
 			}
 
-			return new SqliteConnection (_connectionString);
+			return new SQLiteConnection (_connectionString);
 		}
 
 		/// <summary>
@@ -737,10 +737,10 @@ namespace TechInfoSystems.Data.SQLite
 		/// <returns>
 		/// 	<c>true</c> if a database transaction is in progress; otherwise, <c>false</c>.
 		/// </returns>
-		/// <remarks>A transaction is considered in progress if an instance of <see cref="SqliteTransaction"/> is found in the
+		/// <remarks>A transaction is considered in progress if an instance of <see cref="SQLiteTransaction"/> is found in the
 		/// <see cref="System.Web.HttpContext.Current"/> Items property and its connection string is equal to the Role 
 		/// provider's connection string. Note that this implementation of <see cref="SQLiteRoleProvider"/> never adds a 
-		/// <see cref="SqliteTransaction"/> to <see cref="System.Web.HttpContext.Current"/>, but it is possible that 
+		/// <see cref="SQLiteTransaction"/> to <see cref="System.Web.HttpContext.Current"/>, but it is possible that 
 		/// another data provider in this application does. This may be because other data is also stored in this SQLite database,
 		/// and the application author wants to provide transaction support across the individual providers. If an instance of
 		/// <see cref="System.Web.HttpContext.Current"/> does not exist (for example, if the calling application is not a web application),
@@ -750,7 +750,7 @@ namespace TechInfoSystems.Data.SQLite
 			if (System.Web.HttpContext.Current == null)
 				return false;
 
-			SqliteTransaction tran = (SqliteTransaction)System.Web.HttpContext.Current.Items [HTTP_TRANSACTION_ID];
+			SQLiteTransaction tran = (SQLiteTransaction)System.Web.HttpContext.Current.Items [HTTP_TRANSACTION_ID];
 
 			if ((tran != null) && (String.Equals (tran.Connection.ConnectionString, _connectionString)))
 				return true;

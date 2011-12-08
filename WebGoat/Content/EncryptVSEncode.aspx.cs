@@ -65,7 +65,7 @@ namespace OWASP.WebGoat.NET
     	{
     		byte[] bytes = System.Text.ASCIIEncoding.ASCII.GetBytes(s);
 			byte[] result;
-			HashAlgorithm sha;
+			HashAlgorithm sha= null;
 			switch(hash){
 				case WG_Hash.Sha1:
 					sha = new SHA1Managed();
