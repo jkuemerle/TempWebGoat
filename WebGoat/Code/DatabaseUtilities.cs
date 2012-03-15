@@ -73,6 +73,7 @@ namespace OWASP.WebGoat.NET
 		private string DoNonQuery (String SQL, SQLiteConnection conn)
 		{
             var cmd = new SQLiteCommand(SQL);
+            cmd.Connection = conn;
 			var output = string.Empty;
 			
 			try {
