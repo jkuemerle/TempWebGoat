@@ -28,5 +28,7 @@
 ehthumbs.db
 Icon?
 Thumbs.db
-/WebGoat/obj
-/WebGoat/bin
+
+# obj & bin directories
+obj/
+bin/
