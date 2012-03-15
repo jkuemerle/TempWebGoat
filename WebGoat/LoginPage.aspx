@@ -19,14 +19,13 @@
         <input runat="server" name="name" id="txtUserName" type="text" class="text" /><br />
         <label for="password">Password</label><br />
         <input runat="server" name="password" id="txtPassword" type="password" class="text" /><br />
-        <label for="check1">
+        <label for="checkboxRemember">
             <input runat="server" title="remember" type="checkbox" name="checkboxRemember" id="checkBoxRemember" value="" />
             Remember me
         </label><br />
     </p>
     <p>
         <asp:Button ID="buttonLogOn" SkinID="Button" runat="server" Text="Login" OnClick="ButtonLogOn_Click" />
-        <!--asp:Button ID="buttonAdminLogOn" SkinID="Button" runat="server" Text="Admin Login" OnClick="ButtonAdminLogOn_Click" /-->
     </p>
     <hr />
 </asp:Content>

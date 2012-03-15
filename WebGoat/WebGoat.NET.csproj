@@ -41,9 +41,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\SQLite.NET\bin\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\lib\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -55,10 +54,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="TechInfoSystems.Data.SQLiteProvider, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\TechInfoSystems.Data.SQLiteProvider.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\Master-Pages\Site.Master" />
@@ -153,7 +148,9 @@
     <Content Include="resources\jquery-ui\images\ui-bg_glass_50_3baae3_1x400.png" />
     <Content Include="resources\jquery-ui\images\ui-bg_flat_15_cd0a0a_40x100.png" />
     <Content Include="resources\jquery-ui\images\ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\RebuildDatabase.aspx" />
     <Content Include="AddNewUser.aspx" />
     <Content Include="resources\images\infrared_logo.png" />
@@ -521,7 +518,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SQLiteProvider\SQLiteProvider.csproj">
+      <Project>{2FA43DEC-C17C-4616-B3CD-D6E0C12F938A}</Project>
+      <Name>SQLiteProvider</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\goatdb.sqlite" />
     <None Include="App_Data\tables.sql" />
