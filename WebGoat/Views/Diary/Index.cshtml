@@ -1,0 +1,14 @@
+﻿@model OWASP.WebGoat.NET.Models.Diary 
+@{
+    ViewBag.Title = "Diary";
+}
+
+<h2>Tell Me Your Secrets</h2>
+
+@using (Html.BeginForm("Tell","Diary"))
+{
+    <fieldset>
+    What do you want to say? @Html.TextBoxFor(model => model.Text)
+        <input type="submit" value="Save">
+       </fieldset> 
+}
