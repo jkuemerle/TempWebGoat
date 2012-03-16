@@ -1,4 +1,4 @@
-<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="OWASP.WebGoat.NET.resources.Master_Pages.Site" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="OWASP.WebGoat.NET.resources.Master_Pages.Site" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -81,7 +81,7 @@
                 <ul class="menu" id="menu">
                     <asp:Repeater runat="server" ID="rptrMenu" DataSourceID="SiteMapDataSource1" EnableViewState="False">
                         <ItemTemplate>
-                        <li <%# SiteMap.CurrentNode.ParentNode.ToString().Equals(Eval("Title"))? "class='expand'" : "" %>>
+                        <li <%# null == SiteMap.CurrentNode ? "" : SiteMap.CurrentNode.ParentNode.ToString().Equals(Eval("Title"))? "class='expand'" : "" %>>
                             <a href="#"><%# Eval("Title") %></a>
                             <ul class="acitem">
                                 <asp:Repeater ID="rptrSubmenu" runat="server" DataSource='<%# ((SiteMapNode) Container.DataItem).ChildNodes %>'>
