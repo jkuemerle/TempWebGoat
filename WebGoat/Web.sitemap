@@ -35,6 +35,7 @@
 			<siteMapNode url="~/Content/HiddenField.aspx" title="Hidden Field" description=""/>
 		</siteMapNode>
 		<siteMapNode url="~/Content/CSRF.aspx" title="Cross Site Request Forgery (CSRF)" description="">
+      <siteMapNode url="~/Diary" title="Sample ASP.NET MVC CSRF Form" description="Sample ASP.NET MVC CSRF Form" />
 			<siteMapNode url="~/Content/CSRFDemo.aspx" title="CSRF Demo" description=""/>
 			<siteMapNode url="~/Content/Worm.aspx" title="XSS / CSRF Worm" description=""/>
 			<siteMapNode url="~/Content/Viewstate.aspx" title="CSRF and the .NET Viewstate" description=""/>

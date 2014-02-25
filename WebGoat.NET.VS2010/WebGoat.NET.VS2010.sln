@@ -1,9 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebGoat.NET", "..\WebGoat\WebGoat.NET.csproj", "{83B04441-0F79-4424-AAD0-46E0C3CDDAA1}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6490B861-D73D-488C-9835-C1DE32EFF08A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebGoat.NET", "..\WebGoat\WebGoat.NET.csproj", "{83B04441-0F79-4424-AAD0-46E0C3CDDAA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteProvider", "..\SQLiteProvider\SQLiteProvider.csproj", "{2FA43DEC-C17C-4616-B3CD-D6E0C12F938A}"
 EndProject
